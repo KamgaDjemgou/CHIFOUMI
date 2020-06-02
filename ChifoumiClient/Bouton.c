@@ -18,7 +18,7 @@ Bouton* createBouton(const char* texte, SDL_Color color, int x, int y, SDL_Rende
     bouton->texture->rect.y = y;
     if(!drawText(bouton->texture, texte, color, font, rendu)) return NULL;
 
-    printf("Bouton: %d %d %d %d\n", bouton->texture->rect.x, bouton->texture->rect.y,bouton->texture->rect.h, bouton->texture->rect.w);
+
     bouton->isActive = SDL_TRUE;
 
     TTF_CloseFont(font);
@@ -37,10 +37,20 @@ Bouton* createBoutonWithImage(const char* imagePath, int x, int y, SDL_Renderer*
     bouton->texture->rect.y = y;
     if(!drawImage(bouton->texture,imagePath, rendu)) return NULL;
 
-    printf("Bouton: %d %d %d %d\n", bouton->texture->rect.x, bouton->texture->rect.y,bouton->texture->rect.h, bouton->texture->rect.w);
     bouton->isActive = SDL_TRUE;
 
 }
+
+//Méthode qui permet de vérifier si un bouton est touché ou pas
+SDL_bool isClicked(Bouton* bouton, int x, int y)
+{
+    if(bouton->isActive){
+        SDL_Rect rect = bouton->texture->rect;
+        return (x >= rect.x) && (x <= rect.x + rect.w) && (y >= rect.y) && (y <= rect.y + rect.h);
+    }
+    return SDL_FALSE;
+}
+
 //Libérer la mémoire
 void freeBouton(Bouton* bouton)
 {

@@ -71,8 +71,7 @@ void clearAndDrawBasic()
     }
     gameManager->quitButton = createBoutonWithImage("./resources/stop.bmp", 690, 690, gameManager->renderer);
     gameManager->startButton = createBoutonWithImage("./resources/start.bmp", 10, 690, gameManager->renderer);
-    createBoutonWithImage("./resources/pierre.bmp", 10, 300, gameManager->renderer);
-    createBoutonWithImage("./resources/papier.bmp", SCREEN_WIDTH-210, 300, gameManager->renderer);
+    //createBoutonWithImage("./resources/papier.bmp", SCREEN_WIDTH-210, 300, gameManager->renderer);
     SDL_RenderPresent(gameManager->renderer);
 
 }
@@ -111,27 +110,59 @@ void drawAndPut(const char* text, int fontSize, SDL_Color color, int x, int y)
     }
 
     TTF_CloseFont(font);
-    printf("%d %d %d %d\n", texture->rect.x, texture->rect.y,texture->rect.h, texture->rect.w);
     freeTexture(texture);
 
 }
 
 void gameLoop(){
     SDL_bool program_launched = SDL_TRUE;
-    int test = 15;
     while(program_launched){
         SDL_Event event;
-        test++;
         while(SDL_PollEvent(&event))
         {
             switch(event.type)
             {
+                case SDL_MOUSEBUTTONDOWN:
+                    if(event.button.clicks >= 2)
+                    {
+                        if(isClicked(gameManager->quitButton, event.motion.x, event.motion.y))
+                        {
+                          program_launched = SDL_FALSE;
+                          break;
+                        }
+                        if(isClicked(gameManager->startButton, event.motion.x, event.motion.y))
+                        {
+                            clearAndDrawBasic();
+                            updateScore(0, 0);
+                            break;
+                        }
+                        if(isClicked(gameManager->pierreBouton, event.motion.x, event.motion.y))
+                        {
+                            clearAndDrawBasic();
+                            createBoutonWithImage("./resources/pierre.bmp", 10, 300, gameManager->renderer);
+                            updateScore(gameManager->scoreMe, gameManager->scoreAdv);
+                            break;
+                        }
+                        if(isClicked(gameManager->papierBouton, event.motion.x, event.motion.y))
+                        {
+                            clearAndDrawBasic();
+                            createBoutonWithImage("./resources/papier.bmp", 10, 300, gameManager->renderer);
+                            updateScore(gameManager->scoreMe, gameManager->scoreAdv);
+                            break;
+                        }
+                        if(isClicked(gameManager->ciseauxBouton, event.motion.x, event.motion.y))
+                        {
+                            clearAndDrawBasic();
+                            createBoutonWithImage("./resources/ciseaux.bmp", 10, 300, gameManager->renderer);
+                            updateScore(gameManager->scoreMe, gameManager->scoreAdv);
+                            break;
+                        }
+                     }
+                    break;
                 case SDL_QUIT:
                     program_launched = SDL_FALSE;
                     break;
                 default:
-                    //clearAndDrawBasic();
-                    //updateScore(test%10, test%15);
                     break;
             }
         }
