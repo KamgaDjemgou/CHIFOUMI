@@ -7,8 +7,8 @@
 int main(int argc, char *argv[])
 {
     startGame();
-    //TTF_Quit();
-    //SDL_Quit();
+    TTF_Quit();
+    SDL_Quit();
 
     return EXIT_SUCCESS;
 }

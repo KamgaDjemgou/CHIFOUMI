@@ -14,13 +14,24 @@ void initGameManager()
     {
         SDL_ExitWithError("Impossible de créer la fenêtre.");
     }
-    //Création du rendu
+    //Dessiner les composants de base sur la fenêtre
+    clearAndDrawBasic();
+    updateScore(0, 0);
+
+}
+
+void clearAndDrawBasic()
+{
+    SDL_RenderClear(gameManager->renderer);
+    SDL_DestroyRenderer(gameManager->renderer);
+
     gameManager->renderer = SDL_CreateRenderer(gameManager->window, -1, SDL_RENDERER_SOFTWARE);
     if(gameManager->renderer == NULL)
     {
         destroyGame(gameManager);
         SDL_ExitWithError("Impossible de créer le rendu");
     }
+
     SDL_Surface *screenSurface = SDL_GetWindowSurface(gameManager->window);
     if(screenSurface == NULL)
     {
@@ -38,23 +49,50 @@ void initGameManager()
     color.b = 255;
     drawAndPut("VS", 40, color, (SCREEN_WIDTH-60)/2, 100);
 
-    gameManager->scoreMe = drawAndPut("5", 40, color, 10, 150);
-    gameManager->scoreAdv = drawAndPut("1", 40, color, (SCREEN_WIDTH-100), 150);
-    freeTexture(gameManager->scoreMe);
-    freeTexture(gameManager->scoreAdv);
+    color.r = 245;
+    color.g = 239;
+    color.b = 10;
+    gameManager->ciseauxBouton = createBouton("CISEAUX", color, 124, 600, gameManager->renderer);
+
+    color.r = 192;
+    color.g = 192;
+    color.b = 192;
+    gameManager->pierreBouton = createBouton("PIERRE", color, 334, 600, gameManager->renderer);
+
+    color.r = 0;
+    color.g = 255;
+    color.b = 0;
+    gameManager->papierBouton = createBouton("PAPIER", color, 514, 600, gameManager->renderer);
+
+    if(gameManager->ciseauxBouton == NULL || gameManager->papierBouton == NULL || gameManager->pierreBouton == NULL)
+    {
+        destroyGame(gameManager);
+        SDL_ExitWithError("Impossible de créer le bouton");
+    }
+
     SDL_RenderPresent(gameManager->renderer);
-    gameManager->scoreMe = drawAndPut("10", 40, color, 10, 150);
-    gameManager->scoreAdv = drawAndPut("312", 40, color, (SCREEN_WIDTH-100), 150);
-
-
-
-
-    SDL_RenderPresent(gameManager->renderer);
-    SDL_UpdateWindowSurface(gameManager->window);
 
 }
 
-Texture* drawAndPut(const char* text, int fontSize, SDL_Color color, int x, int y)
+void updateScore(int monScore, int advScore)
+{
+    SDL_Color color = {255, 255, 255};
+    char scoreText[20] = "";
+
+    //Mon score
+    sprintf(scoreText, "%d", monScore);
+    drawAndPut(scoreText, 40, color, 10, 150);
+    gameManager->scoreMe = monScore;
+
+    //Score de l'adversaire
+    sprintf(scoreText, "%d", advScore);
+    drawAndPut(scoreText, 40, color, (SCREEN_WIDTH-100), 150);
+    gameManager->scoreAdv = advScore;
+
+    SDL_RenderPresent(gameManager->renderer);
+}
+
+void drawAndPut(const char* text, int fontSize, SDL_Color color, int x, int y)
 {
     TTF_Font* font = NULL;
     font = TTF_OpenFont("./resources/Symtext.ttf", fontSize);
@@ -69,15 +107,18 @@ Texture* drawAndPut(const char* text, int fontSize, SDL_Color color, int x, int 
        SDL_ExitWithError("Impossible de créer la fenêtre.");
     }
 
+    TTF_CloseFont(font);
     printf("%d %d %d %d\n", texture->rect.x, texture->rect.y,texture->rect.h, texture->rect.w);
-    return texture;
+    freeTexture(texture);
+
 }
 
 void gameLoop(){
     SDL_bool program_launched = SDL_TRUE;
+    int test = 15;
     while(program_launched){
         SDL_Event event;
-
+        test++;
         while(SDL_PollEvent(&event))
         {
             switch(event.type)
@@ -86,9 +127,12 @@ void gameLoop(){
                     program_launched = SDL_FALSE;
                     break;
                 default:
+                    //clearAndDrawBasic();
+                    //updateScore(test%10, test%15);
                     break;
             }
         }
+
     }
 
 }

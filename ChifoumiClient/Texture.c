@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "Texture.h"
 
+//Méthode pour dessiner un texte
 SDL_bool drawText(Texture* texture, const char* texte, SDL_Color couleur, TTF_Font* police, SDL_Renderer* rendu)
 {
    if((texture != NULL) && (police != NULL) && (rendu != NULL))
@@ -25,6 +26,17 @@ SDL_bool drawText(Texture* texture, const char* texte, SDL_Color couleur, TTF_Fo
    }
 
    return SDL_FALSE;
+}
+
+void renderTexture(Texture* texture, int x, int y, SDL_Renderer* renderer)
+{
+	SDL_Rect* renderRect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
+	renderRect->x = x;
+    renderRect->y = y;
+	renderRect->w = texture->rect.w;
+	renderRect->h = texture->rect.h;
+
+	SDL_RenderCopyEx(renderer, texture->texture, NULL, renderRect, 0.0, NULL, SDL_FLIP_NONE);
 }
 //Libérer la mémoire
 void freeTexture(Texture* texture)
