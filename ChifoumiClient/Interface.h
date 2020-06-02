@@ -13,7 +13,8 @@ typedef struct _GameManager
     Bouton* pierreBouton;
     Bouton* papierBouton;
     Bouton* ciseauxBouton;
-
+    Bouton* startButton;
+    Bouton* quitButton;
     //Score du joueur courant
     int scoreMe;
     //Score de son adversaire

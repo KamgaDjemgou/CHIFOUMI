@@ -28,6 +28,29 @@ SDL_bool drawText(Texture* texture, const char* texte, SDL_Color couleur, TTF_Fo
    return SDL_FALSE;
 }
 
+//Dessiner une image
+SDL_bool drawImage(Texture* texture, const char* imagePath, SDL_Renderer* renderer)
+{
+    if((texture != NULL) && (renderer != NULL))
+    {
+        SDL_Surface* surface = NULL;
+        surface = SDL_LoadBMP(imagePath);
+        if(surface == NULL) return SDL_FALSE;
+
+        texture->texture = SDL_CreateTextureFromSurface(renderer,surface);
+        if(texture == NULL) return SDL_FALSE;
+
+        texture->rect.h = surface->h;
+        texture->rect.w = surface->w;
+        SDL_RenderCopy(renderer, texture->texture, NULL, &texture->rect);
+
+        SDL_FreeSurface(surface);
+
+        return SDL_TRUE;
+    }
+    return SDL_FALSE;
+}
+
 void renderTexture(Texture* texture, int x, int y, SDL_Renderer* renderer)
 {
 	SDL_Rect* renderRect = (SDL_Rect*)malloc(sizeof(SDL_Rect));

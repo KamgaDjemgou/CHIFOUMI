@@ -52,24 +52,27 @@ void clearAndDrawBasic()
     color.r = 245;
     color.g = 239;
     color.b = 10;
-    gameManager->ciseauxBouton = createBouton("CISEAUX", color, 124, 600, gameManager->renderer);
+    gameManager->ciseauxBouton = createBouton("CISEAUX", color, 485, 600, gameManager->renderer);
 
     color.r = 192;
     color.g = 192;
     color.b = 192;
-    gameManager->pierreBouton = createBouton("PIERRE", color, 334, 600, gameManager->renderer);
+    gameManager->pierreBouton = createBouton("PIERRE", color, 124, 600, gameManager->renderer);
 
     color.r = 0;
     color.g = 255;
     color.b = 0;
-    gameManager->papierBouton = createBouton("PAPIER", color, 514, 600, gameManager->renderer);
+    gameManager->papierBouton = createBouton("PAPIER", color, 304, 600, gameManager->renderer);
 
     if(gameManager->ciseauxBouton == NULL || gameManager->papierBouton == NULL || gameManager->pierreBouton == NULL)
     {
         destroyGame(gameManager);
         SDL_ExitWithError("Impossible de créer le bouton");
     }
-
+    gameManager->quitButton = createBoutonWithImage("./resources/stop.bmp", 690, 690, gameManager->renderer);
+    gameManager->startButton = createBoutonWithImage("./resources/start.bmp", 10, 690, gameManager->renderer);
+    createBoutonWithImage("./resources/pierre.bmp", 10, 300, gameManager->renderer);
+    createBoutonWithImage("./resources/papier.bmp", SCREEN_WIDTH-210, 300, gameManager->renderer);
     SDL_RenderPresent(gameManager->renderer);
 
 }
