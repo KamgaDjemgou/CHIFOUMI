@@ -176,10 +176,14 @@ void gameLoop(){
                     break;
             }
         }
-        if (recv(gameManager->socket, message, TAILLE, 0) < 0)
+        if (fork()==0)
         {
-            printf("%s\n", message);
+            if (recv(gameManager->socket, message, TAILLE, 0) < 0)
+            {
+                printf("%s\n", message);
+            }
         }
+        
         /*if(recevoirMessage(gameManager->socket, message) ==0)
         {
             
