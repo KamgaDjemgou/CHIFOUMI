@@ -20,6 +20,12 @@ void initGameManager()
 
 }
 
+void initConnexion()
+{
+    if(connexionServeur(gameManager->socket) < 0)
+    SDL_ExitWithError("Impossible de connecter au serveur!.");
+}
+
 void clearAndDrawBasic()
 {
     SDL_RenderClear(gameManager->renderer);
@@ -28,14 +34,12 @@ void clearAndDrawBasic()
     gameManager->renderer = SDL_CreateRenderer(gameManager->window, -1, SDL_RENDERER_SOFTWARE);
     if(gameManager->renderer == NULL)
     {
-        destroyGame(gameManager);
         SDL_ExitWithError("Impossible de créer le rendu");
     }
 
     SDL_Surface *screenSurface = SDL_GetWindowSurface(gameManager->window);
     if(screenSurface == NULL)
     {
-        destroyGame(gameManager);
         SDL_ExitWithError("Impossible de recupérer la surface de l'écran");
     }
     SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0, 0, 160));
@@ -66,7 +70,6 @@ void clearAndDrawBasic()
 
     if(gameManager->ciseauxBouton == NULL || gameManager->papierBouton == NULL || gameManager->pierreBouton == NULL)
     {
-        destroyGame(gameManager);
         SDL_ExitWithError("Impossible de créer le bouton");
     }
     gameManager->quitButton = createBoutonWithImage("./resources/stop.bmp", 690, 690, gameManager->renderer);
@@ -123,7 +126,7 @@ void gameLoop(){
             switch(event.type)
             {
                 case SDL_MOUSEBUTTONDOWN:
-                    if(event.button.clicks >= 2)
+                    if(event.button.clicks >= 1)
                     {
                         if(isClicked(gameManager->quitButton, event.motion.x, event.motion.y))
                         {
@@ -175,6 +178,7 @@ void startGame()
 {
     initSDL();
     initGameManager();
+    initConnexion();
     gameLoop();
 }
 
@@ -190,15 +194,20 @@ void initSDL()
 void SDL_ExitWithError(const char* message)
 {
     SDL_Log("ERREUR: %s > %s\n", message, SDL_GetError());
-    SDL_Quit();
+    destroyGame();
     exit(EXIT_FAILURE);
 }
 
 //Libérer l'espace mémoire
-void destroyGame(GameManager* gameManager)
+void destroyGame()
 {
    SDL_DestroyRenderer(gameManager->renderer);
    SDL_DestroyWindow(gameManager->window);
+   freeBouton(gameManager->ciseauxBouton);
+   freeBouton(gameManager->papierBouton);
+   freeBouton(gameManager->pierreBouton);
+   TTF_Quit();
+   SDL_Quit();
 }
 
 

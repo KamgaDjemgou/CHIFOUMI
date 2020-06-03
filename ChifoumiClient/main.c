@@ -6,9 +6,11 @@
 
 int main(int argc, char *argv[])
 {
+    //Commencer le jeu
     startGame();
-    TTF_Quit();
-    SDL_Quit();
+
+    //Detruire les resources utilisées pour vider la mémoire
+    destroyGame();
 
     return EXIT_SUCCESS;
 }

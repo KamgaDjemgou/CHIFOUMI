@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include "Texture.h"
 #include "Bouton.h"
+#include "ConnexionTCP.h"
 
 typedef struct _GameManager
 {
@@ -20,16 +21,20 @@ typedef struct _GameManager
     //Score de son adversaire
     int scoreAdv;
 
+    //Socket du joueur
+    int socket;
+
 }GameManager;
 
 GameManager* gameManager;
 
 void initSDL();
 void initGameManager();
+void initConnexion();
 void gameLoop();
 void startGame();
 void SDL_ExitWithError(const char*);
-void destroyGame(GameManager*);
+void destroyGame();
 void drawAndPut(const char* text, int fontSize, SDL_Color color, int x, int y);
 void updateScore(int monScore, int advScore);
 void clearAndDrawBasic();
