@@ -27,9 +27,8 @@ int envoyerMessage(int socket, const char* message)
 //Fonction pour recevoir un message
 int recevoirMessage(int socket, char* message)
 {
-    char buffer[TAILLE];
-    if(recv(socket, buffer, TAILLE, 0) < 0) return -1;
-    strcpy(buffer, message);
-
+    bzero(message, TAILLE);
+    if(recv(socket, message, TAILLE, 0) < 0) return -1;
+    
     return 0;
 }

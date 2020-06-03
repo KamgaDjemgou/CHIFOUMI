@@ -120,6 +120,7 @@ void drawAndPut(const char* text, int fontSize, SDL_Color color, int x, int y)
 
 void gameLoop(){
     SDL_bool program_launched = SDL_TRUE;
+    char message[TAILLE];
     while(program_launched){
         SDL_Event event;
         while(SDL_PollEvent(&event))
@@ -174,6 +175,10 @@ void gameLoop(){
                 default:
                     break;
             }
+        }
+        if(recevoirMessage(gameManager->socket, message) ==0)
+        {
+            printf("%s\n", message);
         }
 
     }
