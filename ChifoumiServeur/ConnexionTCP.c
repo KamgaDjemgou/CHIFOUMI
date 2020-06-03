@@ -44,7 +44,7 @@ void loopServeur()
     int tour = 0;
     while(1)
     {
-        if(limit >= 0)
+        if(limit != NBRE_JOUEURS)
         {
             newSocket = accept(serveur->socketServer, (struct sockaddr*)&newAddr,&addr_size);
             if(newSocket < 0)
