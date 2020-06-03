@@ -22,7 +22,7 @@ void initGameManager()
 
 void initConnexion()
 {
-    if(connexionServeur(gameManager->socket) < 0)
+    if(connexionServeur(&gameManager->socket) < 0)
     SDL_ExitWithError("Impossible de connecter au serveur!.");
 }
 
@@ -130,6 +130,7 @@ void gameLoop(){
                     {
                         if(isClicked(gameManager->quitButton, event.motion.x, event.motion.y))
                         {
+                          envoyerMessage(gameManager->socket, QUITTER);
                           program_launched = SDL_FALSE;
                           break;
                         }
@@ -143,6 +144,7 @@ void gameLoop(){
                         {
                             clearAndDrawBasic();
                             createBoutonWithImage("./resources/pierre.bmp", 10, 300, gameManager->renderer);
+                            envoyerMessage(gameManager->socket, PIERRE);
                             updateScore(gameManager->scoreMe, gameManager->scoreAdv);
                             break;
                         }
@@ -150,6 +152,7 @@ void gameLoop(){
                         {
                             clearAndDrawBasic();
                             createBoutonWithImage("./resources/papier.bmp", 10, 300, gameManager->renderer);
+                            envoyerMessage(gameManager->socket,PAPIER);
                             updateScore(gameManager->scoreMe, gameManager->scoreAdv);
                             break;
                         }
@@ -157,12 +160,14 @@ void gameLoop(){
                         {
                             clearAndDrawBasic();
                             createBoutonWithImage("./resources/ciseaux.bmp", 10, 300, gameManager->renderer);
+                            envoyerMessage(gameManager->socket,CISEAUX);
                             updateScore(gameManager->scoreMe, gameManager->scoreAdv);
                             break;
                         }
                      }
                     break;
                 case SDL_QUIT:
+                    envoyerMessage(gameManager->socket, QUITTER);
                     program_launched = SDL_FALSE;
                     break;
                 default:

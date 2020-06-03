@@ -1,11 +1,11 @@
 #include "ConnexionTCP.h"
 
 //Fonction pour se connecter au serveur
-int connexionServeur(int clientSocket)
+int connexionServeur(int* clientSocket)
 {
     struct sockaddr_in serverAddr;
 
-    clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    *clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if(clientSocket < 0)return -1;
 
     memset(&serverAddr, '\0', sizeof(serverAddr));
@@ -13,7 +13,7 @@ int connexionServeur(int clientSocket)
     serverAddr.sin_port = htons(PORT);
     serverAddr.sin_addr.s_addr = inet_addr(IP_SERVEUR);
 
-    if(connect(clientSocket, (struct sockaddr*)&serverAddr,sizeof(serverAddr)) < 0) return -1;
+    if(connect(*clientSocket, (struct sockaddr*)&serverAddr,sizeof(serverAddr)) < 0) return -1;
 
     return 0;
 }
