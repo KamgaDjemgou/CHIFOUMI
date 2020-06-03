@@ -160,6 +160,12 @@ void startServeur(){
     loopServeur();
 }
 
+//Fonction pour envoyer un message
+int envoyerMessage(int socket, const char* message)
+{
+    return send(socket, message, strlen(message), 0);
+}
+
 //Détruire le serveur pour libérer la mémoire
 void destroyServeur()
 {
