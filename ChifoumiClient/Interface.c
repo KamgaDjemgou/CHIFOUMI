@@ -68,7 +68,8 @@ void clearAndDrawBasic()
     color.b = 0;
     gameManager->papierBouton = createBouton("PAPIER", color, 304, 600, gameManager->renderer);
 
-    if(gameManager->ciseauxBouton == NULL || gameManager->papierBouton == NULL || gameManager->pierreBouton == NULL)
+    if(gameManager->ciseauxBouton == NULL || 
+        gameManager->papierBouton == NULL || gameManager->pierreBouton == NULL)
     {
         SDL_ExitWithError("Impossible de créer le bouton");
     }

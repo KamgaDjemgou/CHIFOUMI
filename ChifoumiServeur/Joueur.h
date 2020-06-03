@@ -4,6 +4,7 @@
 typedef struct _Joueur
 {
     int socket;
+    char* choix;
     int score;
 }Joueur;
 

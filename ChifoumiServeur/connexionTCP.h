@@ -33,6 +33,7 @@ void initServeur();
 void destroyServeur();
 void loopServeur();
 void startServeur();
+void traiterFinTour();
 
 int connexionServeur(int clientSocket);
 int envoyerMessage(int socket, const char* message);

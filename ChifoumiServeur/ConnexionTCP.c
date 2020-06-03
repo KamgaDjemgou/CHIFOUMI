@@ -41,6 +41,7 @@ void loopServeur()
     pid_t fils;
 
     int limit = 0;
+    int tour = 0;
     while(1)
     {
         if(limit != NBRE_JOUEURS)
@@ -52,7 +53,8 @@ void loopServeur()
                 destroyServeur();
             }
 
-            printf("[+]Le joueur à l'adresse IP: %s vient de se connecter.\n", inet_ntoa(newAddr.sin_addr));
+            printf("[+]Le joueur à l'adresse IP: %s vient de se connecter.\n", 
+                inet_ntoa(newAddr.sin_addr));
             Joueur joueur = serveur->joueurs[limit];
             joueur.socket = newSocket;
             joueur.score = 0;
@@ -62,35 +64,39 @@ void loopServeur()
             //Avec le nouveau joueur
             fils = fork();
             if(fils == 0){
-                //serveur->socketServer = -1;
+                close(serveur->socketServer);
                 while(1)
                 {
+                    //On vide le buffer pour eviter des erreurs
                     bzero(buffer,TAILLE);
-                    if(recv(newSocket, buffer, TAILLE, 0) > 0)
-                    printf("Le mot recu: %s \n", buffer);
 
+                    //On recoit le message venant du client
+                    recv(newSocket, buffer, TAILLE, 0);
+                    
+                    //Lorsque un client se déconnecte
                     if(strcmp(buffer, QUITTER) == 0)
                     {
-                      printf("[+]Le joueur à l'adresse IP: %s vient de se déconnecter.\n", inet_ntoa(newAddr.sin_addr));
-                      limit--;
+                      printf("[+]Le joueur à l'adresse IP: %s vient de se déconnecter.\n", 
+                        inet_ntoa(newAddr.sin_addr));
+                      limit = 0;
+                      //finJeu();
                       break;
                     }
 
-                    if(strcmp(buffer, CISEAUX) == 0)
-                    {
-                      printf("[+]Le joueur à l'adresse IP: %s .\n", CISEAUX);
-                      continue;
-                    }
+                    if(strcmp(buffer, CISEAUX) == 0 || 
+                        strcmp(buffer, PIERRE) == 0 || 
+                        strcmp(buffer, PAPIER) == 0){
 
-                    if(strcmp(buffer, CISEAUX) == 0)
-                    {
-                      printf("[+]Le joueur à l'adresse IP: %s vient de se déconnecter.\n", inet_ntoa(newAddr.sin_addr));
-                      continue;
-                    }
+                      printf("[+]Le joueur à l'adresse IP: %s.\n", buffer);
+                      joueur.choix = buffer;
+                      tour++;
 
-                    if(strcmp(buffer, CISEAUX) == 0)
-                    {
-                      printf("[+]Le joueur à l'adresse IP: %s vient de se déconnecter.\n", inet_ntoa(newAddr.sin_addr));
+                      //Lorsque les deux joueurs ont envoyés leur choix
+                      if(tour == NBRE_JOUEURS){
+                        traiterFinTour();
+                        tour = 0;
+                      }
+
                       continue;
                     }
                 }
@@ -98,11 +104,59 @@ void loopServeur()
         }
 
     }
+    close(newSocket);
+}
+
+void traiterFinTour(){
+    char message[TAILLE];
+
+    //On vide la chaine
+    bzero(message, TAILLE);
+
+    //Cas de match nul
+    if(strcmp(joueurs[0].choix, joueurs[1].choix) == 0){
+
+        sprintf(message, "NUL|%s", joueurs[0].choix);
+        envoyerMessage(joueurs[0].socket, message);
+        envoyerMessage(joueurs[1].socket, message);
+    }else{
+        //Si le premier joueur a gagné
+        if((strcmp(joueurs[0].choix, PIERRE)==0 && strcmp(joueurs[1].choix, CISEAUX)==0) ||
+        (strcmp(joueurs[0].choix, CISEAUX)==0 && strcmp(joueurs[1].choix, PAPIER)==0) ||
+        (strcmp(joueurs[0].choix, PAPIER)==0 && strcmp(joueurs[1].choix, PIERRE)==0)){
+            joueurs[0].score++;
+
+            //Message à envoyer au gagnant
+            sprintf(message, "GAGNE|%s|%d", joueurs[1].choix, joueurs[0].score);
+            envoyerMessage(joueurs[0].socket, message);
+
+            //On vide la chaine
+            bzero(message, TAILLE);
+
+            //Message à envoyer au perdant
+            sprintf(message, "PERDU|%s|%d", joueurs[0].choix, joueurs[0].score);
+            envoyerMessage(joueurs[1].socket, message);
+        }else{
+            joueurs[1].score++;
+
+            //Message à envoyer au gagnant
+            sprintf(message, "GAGNE|%s|%d", joueurs[0].choix, joueurs[1].score);
+            envoyerMessage(joueurs[1].socket, message);
+
+            //On vide la chaine
+            bzero(message, TAILLE);
+
+            //Message à envoyer au perdant
+            sprintf(message, "PERDU|%s|%d", joueurs[1].choix, joueurs[1].score);
+            envoyerMessage(joueurs[0].socket, message);
+
+        }
+
+    }
 }
 
 void startServeur()
-{
-    initServeur();
+tServeur();
     loopServeur();
 }
 
