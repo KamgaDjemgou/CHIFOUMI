@@ -5,6 +5,7 @@
 #include "Texture.h"
 #include "Bouton.h"
 #include "ConnexionTCP.h"
+#include <unistd.h>
 
 typedef struct _GameManager
 {
