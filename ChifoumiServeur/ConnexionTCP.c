@@ -92,10 +92,10 @@ void loopServeur()
                       tour++;
 
                       //Lorsque les deux joueurs ont envoyés leur choix
-                      if(tour == NBRE_JOUEURS){
+                      /*if(tour == NBRE_JOUEURS){
                         traiterFinTour();
                         tour = 0;
-                      }
+                      }*/
 
                       continue;
                     }

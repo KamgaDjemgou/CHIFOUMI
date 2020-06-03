@@ -176,9 +176,13 @@ void gameLoop(){
                     break;
             }
         }
-        /*if(recevoirMessage(gameManager->socket, message) ==0)
+        if (recv(gameManager->socket, message, TAILLE, 0) < 0)
         {
             printf("%s\n", message);
+        }
+        /*if(recevoirMessage(gameManager->socket, message) ==0)
+        {
+            
         }*/
 
     }
