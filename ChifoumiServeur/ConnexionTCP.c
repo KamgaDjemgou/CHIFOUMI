@@ -114,49 +114,49 @@ void traiterFinTour(){
     bzero(message, TAILLE);
 
     //Cas de match nul
-    if(strcmp(joueurs[0].choix, joueurs[1].choix) == 0){
+    if(strcmp(serveur->joueurs[0].choix, serveur->joueurs[1].choix) == 0){
 
-        sprintf(message, "NUL|%s", joueurs[0].choix);
-        envoyerMessage(joueurs[0].socket, message);
-        envoyerMessage(joueurs[1].socket, message);
+        sprintf(message, "NUL|%s", serveur->joueurs[0].choix);
+        envoyerMessage(serveur->joueurs[0].socket, message);
+        envoyerMessage(serveur->joueurs[1].socket, message);
     }else{
         //Si le premier joueur a gagné
-        if((strcmp(joueurs[0].choix, PIERRE)==0 && strcmp(joueurs[1].choix, CISEAUX)==0) ||
-        (strcmp(joueurs[0].choix, CISEAUX)==0 && strcmp(joueurs[1].choix, PAPIER)==0) ||
-        (strcmp(joueurs[0].choix, PAPIER)==0 && strcmp(joueurs[1].choix, PIERRE)==0)){
-            joueurs[0].score++;
+        if((strcmp(serveur->joueurs[0].choix, PIERRE)==0 && strcmp(serveur->joueurs[1].choix, CISEAUX)==0) ||
+        (strcmp(serveur->joueurs[0].choix, CISEAUX)==0 && strcmp(serveur->joueurs[1].choix, PAPIER)==0) ||
+        (strcmp(serveur->joueurs[0].choix, PAPIER)==0 && strcmp(serveur->joueurs[1].choix, PIERRE)==0)){
+            serveur->joueurs[0].score++;
 
             //Message à envoyer au gagnant
-            sprintf(message, "GAGNE|%s|%d", joueurs[1].choix, joueurs[0].score);
-            envoyerMessage(joueurs[0].socket, message);
+            sprintf(message, "GAGNE|%s|%d", serveur->joueurs[1].choix, serveur->joueurs[0].score);
+            envoyerMessage(serveur->joueurs[0].socket, message);
 
             //On vide la chaine
             bzero(message, TAILLE);
 
             //Message à envoyer au perdant
-            sprintf(message, "PERDU|%s|%d", joueurs[0].choix, joueurs[0].score);
-            envoyerMessage(joueurs[1].socket, message);
+            sprintf(message, "PERDU|%s|%d", serveur->joueurs[0].choix, serveur->joueurs[0].score);
+            envoyerMessage(serveur->joueurs[1].socket, message);
         }else{
-            joueurs[1].score++;
+            serveur->joueurs[1].score++;
 
             //Message à envoyer au gagnant
-            sprintf(message, "GAGNE|%s|%d", joueurs[0].choix, joueurs[1].score);
-            envoyerMessage(joueurs[1].socket, message);
+            sprintf(message, "GAGNE|%s|%d", serveur->joueurs[0].choix, serveur->joueurs[1].score);
+            envoyerMessage(serveur->joueurs[1].socket, message);
 
             //On vide la chaine
             bzero(message, TAILLE);
 
             //Message à envoyer au perdant
-            sprintf(message, "PERDU|%s|%d", joueurs[1].choix, joueurs[1].score);
-            envoyerMessage(joueurs[0].socket, message);
+            sprintf(message, "PERDU|%s|%d", serveur->joueurs[1].choix, serveur->joueurs[1].score);
+            envoyerMessage(serveur->joueurs[0].socket, message);
 
         }
 
     }
 }
 
-void startServeur()
-tServeur();
+void startServeur(){
+    initServeur();
     loopServeur();
 }
 
