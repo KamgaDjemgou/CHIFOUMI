@@ -176,10 +176,10 @@ void gameLoop(){
                     break;
             }
         }
-        if(recevoirMessage(gameManager->socket, message) ==0)
+        /*if(recevoirMessage(gameManager->socket, message) ==0)
         {
             printf("%s\n", message);
-        }
+        }*/
 
     }
 
