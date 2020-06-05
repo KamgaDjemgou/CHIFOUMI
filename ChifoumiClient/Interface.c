@@ -279,10 +279,10 @@ void printResultOnScreen(const char* result)
     }
 
     if((strcmp(result, MATCH_GAGNE) == 0)){
-        drawAndPut("MATCH GAGNE", 40, color, (SCREEN_WIDTH-190)/2, 700);
+        drawAndPut("MATCH GAGNE", 40, color, 274, 700);
         drawAndPut("GAGNE", 40, color, (SCREEN_WIDTH-100)/2, 400);
     }else if((strcmp(result,MATCH_PERDU) == 0)){
-        drawAndPut("MATCH PERDU", 40, color, (SCREEN_WIDTH-190)/2, 700);
+        drawAndPut("MATCH PERDU", 40, color, 274, 700);
         drawAndPut("PERDU", 40, color, (SCREEN_WIDTH-100)/2, 400);
     }else{
         drawAndPut(result, 40, color, (SCREEN_WIDTH-100)/2, 400);
