@@ -35,7 +35,15 @@
 		<Linker>
 			<Add option="`sdl2-config --libs`" />
 		</Linker>
-		<Unit filename="main.cpp" />
+		<Unit filename="main.c" />
+		<Unit filename="ConnexionTCP.c" />
+		<Unit filename="ConnexionTCP.h" />
+		<Unit filename="Bouton.c" />
+		<Unit filename="Bouton.h" />
+		<Unit filename="Interface.c" />
+		<Unit filename="Interface.h" />
+		<Unit filename="Texture.c" />
+		<Unit filename="Texture.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

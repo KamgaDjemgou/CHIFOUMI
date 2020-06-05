@@ -24,7 +24,9 @@
 typedef struct _SERVEUR
 {
     int socketServer;
-    Joueur joueurs[NBRE_JOUEURS];
+    Joueur joueur1;
+    Joueur joueur2;
+    int tour;
 
 }Serveur;
 Serveur* serveur;
@@ -36,6 +38,7 @@ void startServeur();
 void traiterFinTour();
 
 int connexionServeur(int clientSocket);
+void connexionJoueurs();
 int envoyerMessage(int socket, const char* message);
 int recevoirMessage(int socket, char* message);
 

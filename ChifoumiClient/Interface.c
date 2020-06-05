@@ -68,14 +68,15 @@ void clearAndDrawBasic()
     color.b = 0;
     gameManager->papierBouton = createBouton("PAPIER", color, 304, 600, gameManager->renderer);
 
-    if(gameManager->ciseauxBouton == NULL || 
+    if(gameManager->ciseauxBouton == NULL ||
         gameManager->papierBouton == NULL || gameManager->pierreBouton == NULL)
     {
         SDL_ExitWithError("Impossible de créer le bouton");
     }
-    gameManager->quitButton = createBoutonWithImage("./resources/stop.bmp", 690, 690, gameManager->renderer);
-    gameManager->startButton = createBoutonWithImage("./resources/start.bmp", 10, 690, gameManager->renderer);
-    //createBoutonWithImage("./resources/papier.bmp", SCREEN_WIDTH-210, 300, gameManager->renderer);
+    //gameManager->quitButton = createBoutonWithImage("./resources/stop.bmp", 690, 690, gameManager->renderer);
+    //gameManager->startButton = createBoutonWithImage("./resources/start.bmp", 10, 690, gameManager->renderer);
+
+
     SDL_RenderPresent(gameManager->renderer);
 
 }
@@ -120,7 +121,6 @@ void drawAndPut(const char* text, int fontSize, SDL_Color color, int x, int y)
 
 void gameLoop(){
     SDL_bool program_launched = SDL_TRUE;
-    char message[TAILLE];
     while(program_launched){
         SDL_Event event;
         while(SDL_PollEvent(&event))
@@ -130,40 +130,32 @@ void gameLoop(){
                 case SDL_MOUSEBUTTONDOWN:
                     if(event.button.clicks >= 1)
                     {
-                        if(isClicked(gameManager->quitButton, event.motion.x, event.motion.y))
+                        /*if(isClicked(gameManager->quitButton, event.motion.x, event.motion.y))
                         {
                           envoyerMessage(gameManager->socket, QUITTER);
                           program_launched = SDL_FALSE;
                           break;
-                        }
-                        if(isClicked(gameManager->startButton, event.motion.x, event.motion.y))
+                        }*/
+                        /*if(isClicked(gameManager->startButton, event.motion.x, event.motion.y))
                         {
                             clearAndDrawBasic();
                             updateScore(0, 0);
+
                             break;
-                        }
+                        }*/
                         if(isClicked(gameManager->pierreBouton, event.motion.x, event.motion.y))
                         {
-                            clearAndDrawBasic();
-                            createBoutonWithImage("./resources/pierre.bmp", 10, 300, gameManager->renderer);
-                            envoyerMessage(gameManager->socket, PIERRE);
-                            updateScore(gameManager->scoreMe, gameManager->scoreAdv);
+                            traiterClic(PIERRE, IMAGE_PIERRE);
                             break;
                         }
                         if(isClicked(gameManager->papierBouton, event.motion.x, event.motion.y))
                         {
-                            clearAndDrawBasic();
-                            createBoutonWithImage("./resources/papier.bmp", 10, 300, gameManager->renderer);
-                            envoyerMessage(gameManager->socket,PAPIER);
-                            updateScore(gameManager->scoreMe, gameManager->scoreAdv);
+                            traiterClic(PAPIER, IMAGE_PAPIER);
                             break;
                         }
                         if(isClicked(gameManager->ciseauxBouton, event.motion.x, event.motion.y))
                         {
-                            clearAndDrawBasic();
-                            createBoutonWithImage("./resources/ciseaux.bmp", 10, 300, gameManager->renderer);
-                            envoyerMessage(gameManager->socket,CISEAUX);
-                            updateScore(gameManager->scoreMe, gameManager->scoreAdv);
+                            traiterClic(CISEAUX, IMAGE_CISEAUX);
                             break;
                         }
                      }
@@ -175,22 +167,126 @@ void gameLoop(){
                 default:
                     break;
             }
+
         }
-        if (fork()==0)
-        {
-            if (recv(gameManager->socket, message, TAILLE, 0) < 0)
-            {
-                printf("%s\n", message);
-            }
-        }
-        
-        /*if(recevoirMessage(gameManager->socket, message) ==0)
-        {
-            
-        }*/
 
     }
 
+
+
+}
+
+//Mettre tous les boutons inactifs donc non cliquables
+void setAllDisable()
+{
+   gameManager->pierreBouton->isActive = SDL_FALSE;
+   gameManager->papierBouton->isActive = SDL_FALSE;
+   gameManager->ciseauxBouton->isActive = SDL_FALSE;
+}
+
+//Remettre les boutons cliquables
+void setAllAble()
+{
+   gameManager->pierreBouton->isActive = SDL_TRUE;
+   gameManager->papierBouton->isActive = SDL_TRUE;
+   gameManager->ciseauxBouton->isActive = SDL_TRUE;
+}
+
+//Traitement lorsque le joueur fait son choix
+void traiterClic(const char* choix, const char* imagePath)
+{
+    clearAndDrawBasic();
+    createBoutonWithImage(imagePath, 10, 300, gameManager->renderer);
+    updateScore(gameManager->scoreMe, gameManager->scoreAdv);
+
+    setAllDisable();
+
+    //On envoie au serveur le choix
+    envoyerMessage(gameManager->socket,choix);
+
+    //Reception de la reponse du serveur
+    char buffer[TAILLE];
+    bzero(buffer, TAILLE);
+
+    if(recv(gameManager->socket, buffer, TAILLE, 0) < 0){
+        printf("[-]Erreur dans la reception du message");
+    }else{
+        char jeuAdv[TAILLE];
+        bzero(jeuAdv, TAILLE);
+        char result[TAILLE];
+        bzero(result, TAILLE);
+
+        sscanf(buffer, "%s %s %d %d", result, jeuAdv, &gameManager->scoreMe, &gameManager->scoreAdv);
+
+        //Si votre adversaire a quité le jeu
+        if(strcmp(result, FORFAIT) == 0)
+        {
+            SDL_Color color = {0, 255, 0};
+            drawAndPut("MATCH GAGNE", 40, color, (SCREEN_WIDTH-190)/2, 700);
+            drawAndPut(result, 40, color, (SCREEN_WIDTH-100)/2, 400);
+
+            updateScore(gameManager->scoreMe, gameManager->scoreAdv);
+            setAllAble();
+            close(gameManager->socket);
+            return;
+        }
+
+        if(strcmp(jeuAdv, CISEAUX) == 0)
+        {
+            clearAndDrawBasic();
+            createBoutonWithImage(imagePath, 10, 300, gameManager->renderer);
+            createBoutonWithImage(IMAGE_CISEAUX, SCREEN_WIDTH-210, 300, gameManager->renderer);
+            printResultOnScreen(result);
+            updateScore(gameManager->scoreMe, gameManager->scoreAdv);
+        }
+        if(strcmp(jeuAdv, PIERRE) == 0){
+           clearAndDrawBasic();
+           createBoutonWithImage(imagePath, 10, 300, gameManager->renderer);
+           createBoutonWithImage(IMAGE_PIERRE, SCREEN_WIDTH-210, 300, gameManager->renderer);
+           printResultOnScreen(result);
+           updateScore(gameManager->scoreMe, gameManager->scoreAdv);
+
+        }
+        if(strcmp(jeuAdv, PAPIER) == 0){
+            clearAndDrawBasic();
+            createBoutonWithImage(imagePath, 10, 300, gameManager->renderer);
+            createBoutonWithImage(IMAGE_PAPIER, SCREEN_WIDTH-210, 300, gameManager->renderer);
+            printResultOnScreen(result);
+            updateScore(gameManager->scoreMe, gameManager->scoreAdv);
+        }
+        setAllAble();
+    }
+
+}
+
+void printResultOnScreen(const char* result)
+{
+    SDL_Color color;
+    if(strcmp(result, GAGNE) == 0 || (strcmp(result, MATCH_GAGNE) == 0))
+    {
+       color.r = 0;
+       color.g = 255;
+       color.b = 0;
+
+    }else if(strcmp(result, PERDU) == 0 || (strcmp(result,MATCH_PERDU) == 0)){
+       color.r = 255;
+       color.g = 0;
+       color.b = 0;
+    }else{
+       color.r = 255;
+       color.g = 255;
+       color.b = 0;
+    }
+
+    if((strcmp(result, MATCH_GAGNE) == 0)){
+        drawAndPut("MATCH GAGNE", 40, color, (SCREEN_WIDTH-190)/2, 700);
+        drawAndPut("GAGNE", 40, color, (SCREEN_WIDTH-100)/2, 400);
+    }else if((strcmp(result,MATCH_PERDU) == 0)){
+        drawAndPut("MATCH PERDU", 40, color, (SCREEN_WIDTH-190)/2, 700);
+        drawAndPut("PERDU", 40, color, (SCREEN_WIDTH-100)/2, 400);
+    }else{
+        drawAndPut(result, 40, color, (SCREEN_WIDTH-100)/2, 400);
+    }
 }
 
 void startGame()
