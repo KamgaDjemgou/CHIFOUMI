@@ -1,8 +1,8 @@
 # CHIFOUMI 
 
-## Réalisé par KAMGA DJEMGOU Hisdaele Kavel aliais Kadhisk
+## Réalisé par KAMGA DJEMGOU Hisdaele Kavel alias Kadhisk
 
-<h3>Création du jeu Pierre-Papier-Ciseau en C avec Interface graphique avec SDL</h3>
+## Création du jeu Pierre-Papier-Ciseau en C avec Interface graphique avec SDL2
 
 Nous avons deux repertoires:
 
@@ -15,7 +15,7 @@ Nous avons deux repertoires:
 
 > - Pour compiler: **gcc -lSDL2_ttf  \*.c  -o  prog  $(sdl2-config --cflags --libs)**
 > - Pour lancer le jeu: **./prog**
-> - Avant le lancer le client, il faut s'assurer d'avoir bien lançer le serveur.
+> - Avant le lancer le client, il faut s'assurer d'avoir bien lançé le serveur.
 
 Voici quelques captures d'écrans des interfaces graphiques réalisées:
 ![Image Ecran du joueur](./images/page1.png "Page d'accueil")
