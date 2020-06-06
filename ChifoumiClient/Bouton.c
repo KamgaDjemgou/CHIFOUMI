@@ -8,7 +8,7 @@ Bouton* createBouton(const char* texte, SDL_Color color, int x, int y, SDL_Rende
     bouton->texture = (Texture*)malloc(sizeof(Texture));
 
     TTF_Font* font = NULL;
-    font = TTF_OpenFont("./resources/Symtext.ttf", 40);
+    font = TTF_OpenFont(TTF, 40);
     if(font == NULL)
     {
         freeBouton(bouton);
@@ -46,7 +46,8 @@ SDL_bool isClicked(Bouton* bouton, int x, int y)
 {
     if(bouton->isActive){
         SDL_Rect rect = bouton->texture->rect;
-        return (x >= rect.x) && (x <= rect.x + rect.w) && (y >= rect.y) && (y <= rect.y + rect.h);
+        return (x >= rect.x) && (x <= rect.x + rect.w) && 
+               (y >= rect.y) && (y <= rect.y + rect.h);
     }
     return SDL_FALSE;
 }

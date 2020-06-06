@@ -12,10 +12,7 @@
 #define PORT 4424
 #define TAILLE 1024
 #define IP_SERVEUR "127.0.0.1"
-#define QUITTER ":exit"
-#define PIERRE "PIERRE"
-#define PAPIER "PAPIER"
-#define CISEAUX "CISEAUX"
+
 
 int connexionServeur(int* clientSocket);
 int envoyerMessage(int socket, const char* message);

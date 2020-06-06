@@ -3,14 +3,17 @@
 #include <stdio.h>
 #include "Texture.h"
 
-//Méthode pour dessiner un texte
-SDL_bool drawText(Texture* texture, const char* texte, SDL_Color couleur, TTF_Font* police, SDL_Renderer* rendu)
+/**
+* Méthode qui permet simplement de dessiner
+* un texte sur le rendu donné avec une police précise
+*/
+SDL_bool drawText(Texture* texture, const char* texte, 
+    SDL_Color couleur, TTF_Font* police, SDL_Renderer* rendu)
 {
    if((texture != NULL) && (police != NULL) && (rendu != NULL))
    {
         SDL_Surface* surfaceTexte = NULL;
         surfaceTexte = TTF_RenderText_Solid(police, texte, couleur);
-
         if(surfaceTexte == NULL) return SDL_FALSE;
 
         texture->texture = SDL_CreateTextureFromSurface(rendu,surfaceTexte);
@@ -20,7 +23,9 @@ SDL_bool drawText(Texture* texture, const char* texte, SDL_Color couleur, TTF_Fo
         texture->rect.w = surfaceTexte->w;
         SDL_RenderCopy(rendu, texture->texture, NULL, &texture->rect);
 
+        //Libération de la mémoire
         SDL_FreeSurface(surfaceTexte);
+        freeTexture(texture);
 
         return SDL_TRUE;
    }
@@ -28,8 +33,11 @@ SDL_bool drawText(Texture* texture, const char* texte, SDL_Color couleur, TTF_Fo
    return SDL_FALSE;
 }
 
-//Dessiner une image
-SDL_bool drawImage(Texture* texture, const char* imagePath, SDL_Renderer* renderer)
+/**
+* Méthode qui permet de dessiner une image sur un rendu
+*/
+SDL_bool drawImage(Texture* texture, const char* imagePath, 
+    SDL_Renderer* renderer)
 {
     if((texture != NULL) && (renderer != NULL))
     {
@@ -44,28 +52,22 @@ SDL_bool drawImage(Texture* texture, const char* imagePath, SDL_Renderer* render
         texture->rect.w = surface->w;
         SDL_RenderCopy(renderer, texture->texture, NULL, &texture->rect);
 
+        //Libération de la mémoire
         SDL_FreeSurface(surface);
-
+        freeTexture(texture);
         return SDL_TRUE;
     }
+
     return SDL_FALSE;
 }
 
-void renderTexture(Texture* texture, int x, int y, SDL_Renderer* renderer)
-{
-	SDL_Rect* renderRect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
-	renderRect->x = x;
-    renderRect->y = y;
-	renderRect->w = texture->rect.w;
-	renderRect->h = texture->rect.h;
-
-	SDL_RenderCopyEx(renderer, texture->texture, NULL, renderRect, 0.0, NULL, SDL_FLIP_NONE);
-}
 //Libérer la mémoire
 void freeTexture(Texture* texture)
 {
     if (texture->texture != NULL)
+    {
         SDL_DestroyTexture(texture->texture);
+    }
 
     free(texture);
     texture = NULL;
