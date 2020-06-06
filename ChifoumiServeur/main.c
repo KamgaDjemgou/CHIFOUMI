@@ -2,7 +2,10 @@
 
 int main()
 {
+	//Lancer le serveur
     startServeur();
+    //Detruire le serveur
     destroyServeur();
-    return 0;
+
+    return EXIT_SUCCESS;
 }

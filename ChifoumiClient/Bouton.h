@@ -7,7 +7,7 @@
 typedef struct _BOUTON
 {
     Texture* texture;
-    SDL_bool isActive;
+    int isActive;
 }Bouton;
 
 Bouton* createBouton(const char* texte, SDL_Color color, int x, int y, SDL_Renderer* rendu);

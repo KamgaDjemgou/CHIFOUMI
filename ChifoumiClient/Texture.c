@@ -25,8 +25,6 @@ SDL_bool drawText(Texture* texture, const char* texte,
 
         //Libération de la mémoire
         SDL_FreeSurface(surfaceTexte);
-        freeTexture(texture);
-
         return SDL_TRUE;
    }
 

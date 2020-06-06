@@ -33,11 +33,12 @@ void initGameManager()
     SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEEN_HEIGHT, SDL_WINDOW_SHOWN);
     if(gameManager->window == NULL)
     {
+        SDL_DestroyWindow(gameManager->window);
         SDL_ExitWithError("Impossible de créer la fenêtre.");
     }
 
     //Dessiner les composants de base sur la fenêtre
-    clearAndDrawBasic()
+    clearAndDrawBasic();
     //On met à zéro les scores des joueur
     updateScore(0, 0);
 
@@ -47,7 +48,6 @@ void initGameManager()
 void SDL_ExitWithError(const char* message)
 {
     SDL_Log("ERREUR: %s > %s\n", message, SDL_GetError());
-    destroyGame();
     exit(EXIT_FAILURE);
 }
 
@@ -63,21 +63,25 @@ void clearAndDrawBasic()
     gameManager->renderer = SDL_CreateRenderer(gameManager->window, -1, SDL_RENDERER_SOFTWARE);
     if(gameManager->renderer == NULL)
     {
+        SDL_DestroyWindow(gameManager->window);
+        SDL_DestroyRenderer(gameManager->renderer);
         SDL_ExitWithError("Impossible de créer le rendu");
     }
 
     //Coloration de la surface de l'écran
     SDL_Surface *screenSurface = SDL_GetWindowSurface(gameManager->window);
     if(screenSurface == NULL)
-    {
+    {   
+        SDL_DestroyWindow(gameManager->window);
+        SDL_DestroyRenderer(gameManager->renderer);
         SDL_ExitWithError("Impossible de recupérer la surface de l'écran");
     }
     SDL_FillRect(screenSurface, NULL, 
         SDL_MapRGB(screenSurface->format, 0, 0, 160));
     SDL_FreeSurface(screenSurface);
 
-    drawAllText()
-    drawAllButtons()
+    drawAllText();
+    drawAllButtons();
     
     
     //On actualise la page pour que les modifications 
@@ -125,7 +129,8 @@ void drawAllButtons(){
 
     if(gameManager->ciseauxBouton == NULL ||
         gameManager->papierBouton == NULL || gameManager->pierreBouton == NULL)
-    {
+    {   
+        destroyGame();
         SDL_ExitWithError("Impossible de créer le bouton");
     }
 }
@@ -161,12 +166,11 @@ void drawAndPut(const char* text, int fontSize, SDL_Color color, int x, int y)
     texture->rect.x = x;
     texture->rect.y = y;
     if(!drawText(texture, text, color, font, gameManager->renderer))
-    {
+    {   
        SDL_ExitWithError("Impossible de dessiner sur la texture un texte");
     }
 
     TTF_CloseFont(font);
-    freeTexture(texture);
 
 }
 
@@ -232,7 +236,7 @@ void traiterClic(const char* choix, const char* imagePath)
     //On met tous les boutons inactifs pour éviter
     //qu'on y appuie encore
     setAllDisable();
-
+    
     //On envoie au serveur le choix
     envoyerMessage(gameManager->socket,choix);
 
@@ -266,7 +270,7 @@ void traiterReceptionServeur(const char* monChoixImage)
             SDL_Color color = {0, 255, 0};
             drawAndPut("MATCH GAGNE", 40, color, (SCREEN_WIDTH-190)/2, 700);
             drawAndPut(result, 40, color, (SCREEN_WIDTH-100)/2, 400);
-
+            setAllDisable();
             updateScore(gameManager->scoreMe, gameManager->scoreAdv);
             close(gameManager->socket);
             return;
@@ -296,8 +300,8 @@ void updateResult(const char* monChoixImage,
     const char* choixAdvImage, const char* result)
 {
     clearAndDrawBasic();
-    createBoutonWithImage(monChoix, 10, 300, gameManager->renderer);
-    createBoutonWithImage(choixAdv, SCREEN_WIDTH-210, 300, gameManager->renderer);
+    createBoutonWithImage(monChoixImage, 10, 300, gameManager->renderer);
+    createBoutonWithImage(choixAdvImage, SCREEN_WIDTH-210, 300, gameManager->renderer);
     printResultOnScreen(result);
     updateScore(gameManager->scoreMe, gameManager->scoreAdv);
     setAllAble();
@@ -308,17 +312,17 @@ void updateResult(const char* monChoixImage,
 //Mettre tous les boutons inactifs donc non cliquables
 void setAllDisable()
 {
-   gameManager->pierreBouton->isActive = SDL_FALSE;
-   gameManager->papierBouton->isActive = SDL_FALSE;
-   gameManager->ciseauxBouton->isActive = SDL_FALSE;
+   gameManager->pierreBouton->isActive = 0;
+   gameManager->papierBouton->isActive = 0;
+   gameManager->ciseauxBouton->isActive = 0;
 }
 
 //Remettre les boutons cliquables
 void setAllAble()
 {
-   gameManager->pierreBouton->isActive = SDL_TRUE;
-   gameManager->papierBouton->isActive = SDL_TRUE;
-   gameManager->ciseauxBouton->isActive = SDL_TRUE;
+   gameManager->pierreBouton->isActive = 1;
+   gameManager->papierBouton->isActive = 1;
+   gameManager->ciseauxBouton->isActive = 1;
 }
 
 //Dessiner le resultat(GAGNE, PERDU, NUL ou FORFAIT) 
@@ -344,9 +348,11 @@ void printResultOnScreen(const char* result)
     if((strcmp(result, MATCH_GAGNE) == 0)){
         drawAndPut("MATCH GAGNE", 40, color, 274, 700);
         drawAndPut(GAGNE, 40, color, (SCREEN_WIDTH-100)/2, 400);
+        setAllDisable();
     }else if((strcmp(result,MATCH_PERDU) == 0)){
         drawAndPut("MATCH PERDU", 40, color, 274, 700);
         drawAndPut(PERDU, 40, color, (SCREEN_WIDTH-100)/2, 400);
+        setAllDisable();
     }else{
         drawAndPut(result, 40, color, (SCREEN_WIDTH-100)/2, 400);
     }

@@ -72,6 +72,7 @@ void loopServeur()
             if(strcmp(buffer, QUITTER) == 0)
             {
                 printf("[+]Le joueur 1 vient de se déconnecter.\n");
+                printf("[-]Fin anormale de la partie.\n");
                 close(serveur->joueur1.socket);
 
                 bzero(buffer, TAILLE);
@@ -84,7 +85,6 @@ void loopServeur()
                strcmp(buffer, PIERRE) == 0 ||
                strcmp(buffer, PAPIER) == 0){
 
-                printf("[+]Le joueur 1: %s.\n", buffer);
                 bzero(serveur->joueur1.choix, TAILLE);
                 strcpy(serveur->joueur1.choix, buffer);
                 tour++;
@@ -102,13 +102,14 @@ void loopServeur()
                 bzero(buffer, TAILLE);
                 sprintf(buffer, "FORFAIT %s %d %d", serveur->joueur2.choix, serveur->joueur1.score, serveur->joueur2.score);
                 envoyerMessage(serveur->joueur1.socket,buffer);
+
+                 printf("[-]Fin anormale de la partie.\n");
                 destroyServeur();
             }else {
                 if(strcmp(buffer, CISEAUX) == 0 ||
                     strcmp(buffer, PIERRE) == 0 ||
                     strcmp(buffer, PAPIER) == 0){
 
-                    printf("[+]Le joueur 2: %s.\n", buffer);
                     bzero(serveur->joueur2.choix, TAILLE);
                     strcpy(serveur->joueur2.choix, buffer);
                     tour++;
@@ -164,6 +165,7 @@ void traiterFinTour(){
             sprintf(message, "MATCH_PERDU %s %d %d", serveur->joueur1.choix, serveur->joueur2.score, serveur->joueur1.score);
             envoyerMessage(serveur->joueur2.socket, message);
 
+            printf("[+]Fin de la partie.\n");
             destroyServeur();
             }else{
             //Message à envoyer au gagnant
@@ -197,6 +199,7 @@ void traiterFinTour(){
             sprintf(message, "MATCH_GAGNE %s %d %d", serveur->joueur1.choix, serveur->joueur2.score, serveur->joueur1.score);
             envoyerMessage(serveur->joueur2.socket, message);
 
+            printf("[+]Fin de la partie.\n");
             destroyServeur();
 
             }else{
@@ -235,6 +238,7 @@ int envoyerMessage(int socket, const char* message)
 //Détruire le serveur pour libérer la mémoire
 void destroyServeur()
 {
+    close(serveur->socketServer);
     serveur = NULL;
     exit(1);
 }

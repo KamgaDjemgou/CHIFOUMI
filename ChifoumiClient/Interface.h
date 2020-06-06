@@ -8,8 +8,8 @@
 #include <unistd.h>
 
 //Définition des macros
-#define SCREEN_WIDTH  800;
-#define SCREEEN_HEIGHT 800;
+#define SCREEN_WIDTH  800
+#define SCREEEN_HEIGHT 800
 
 #define PIERRE "PIERRE"
 #define PAPIER "PAPIER"
